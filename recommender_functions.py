@@ -15,11 +15,43 @@ def create_ranked_movies(movies_df: pd.DataFrame, reviews_df: pd.DataFrame):
     rating_latest = reviews_df.groupby('movie_id')['timestamp'].max()
     rating_df = pd.DataFrame({"mean": rating_mean, "count": rating_count, "latest_ts": rating_latest})
 
-    ranked_movies = movies_df.merge(rating_df, how='left', on='movie_id', left_index=True)
+    ranked_movies = movies_df.merge(rating_df, how='left', on='movie_id', right_index=True)
     ranked_movies.sort_values(["mean","count","latest_ts"], ascending=False, inplace=True)
     ranked_movies = ranked_movies[ranked_movies['count'] > 4][["movie", "mean","count","latest_ts"]]
 
     return ranked_movies
 
-def popular_recommendation(n_top, ranked_movies):
+def popular_recommendation(n_top:int, ranked_movies:pd.DataFrame):
+    '''
+    INPUT:
+    n_top - the number of recommendation returned
+    ranked_movies - DataFrame of ranked movie
+
+    OUTPUT:
+    result - list of recommended movies name
+    '''
     return list(ranked_movies['movie'].iloc[:n_top])
+
+def find_similiar_movies(movie_id:int, movies_df:pd.DataFrame) -> str:
+    '''
+    INPUT:
+    movie_id - movie id
+    movies_df - movie DataFrame
+
+    OUTPUT:
+    result - name of the recommended movie
+    '''
+    #get row of given movie_id feature
+    movie_mat = np.array(movies_df[movies_df['movie_id'] == movie_id].iloc[:,5:])[0]
+    #get feature matrix of all movies
+    movies_mat = np.array(movies_df.iloc[:,5:])
+
+    #calculate similiarity between given movie and all movie
+    dot_prod = movie_mat.dot(movies_mat.transpose())
+
+    #get the most likely movie
+    movie_rows = np.where(dot_prod == np.max(dot_prod))[0]
+    movie_row = np.random.choice(movie_rows)
+    movie = movies_df.iloc[movie_row]['movie']
+
+    return movie
