@@ -22,4 +22,4 @@ def create_ranked_movies(movies_df: pd.DataFrame, reviews_df: pd.DataFrame):
     return ranked_movies
 
 def popular_recommendation(n_top, ranked_movies):
-    ranked_movies['movies'][:n_top]
+    return list(ranked_movies['movie'].iloc[:n_top])
