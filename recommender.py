@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import math
+import recommender_functions as rf
 import sys
 
 class Recommender():
@@ -29,6 +31,7 @@ class Recommender():
         self.learning_rate = learning_rate
         self.iters = iters
 
+        ### Funk SVD Recommender ###
         #wrangle reviews dataframe to dummy matrix
         user_rating_df = self.reviews_df.groupby(['user_id', 'movie_id'])['rating'].max().unstack()
         user_rating_mat = np.array(user_rating_df)
@@ -63,9 +66,24 @@ class Recommender():
         
         self.u_mat, self.v_mat = u_mat, v_mat
 
+        ### Popular recommendation ###
+        self.ranked_movies = rf.create_ranked_movies(self.movies_df, self.reviews_df)
 
-    def make_recs(self, id: str):
-        return ['asd']
+    def make_recs(self, user_id: int):
+        if(user_id in self.users_arr):
+            user_idx = np.where(self.users_arr == user_id)[0][0]
+            dot_prod = self.u_mat[user_idx,:].dot(self.v_mat)
+            movie_idx = np.where(dot_prod == np.max(dot_prod))[0][0]
+            return self.movies_df[self.movies_df['movie_id'] == self.movies_arr[movie_idx]]['movie']
 
-    def predict_rating(user_id, movie_id):
-        pass
+        else:
+            return rf.popular_recommendation(5, self.ranked_movies)
+
+
+
+    def predict_rating(self, user_id, movie_id) -> int:
+        user_idx = np.where(self.users_arr == user_id)[0][0]
+        movie_idx = np.where(self.movies_arr == movie_id)[0][0]
+        
+        pred = math.floor(self.u_mat[user_idx,:].dot(self.v_mat[:,movie_idx]))
+        return pred

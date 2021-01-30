@@ -31,7 +31,7 @@ def popular_recommendation(n_top:int, ranked_movies:pd.DataFrame):
     OUTPUT:
     result - list of recommended movies name
     '''
-    return list(ranked_movies['movie'].iloc[:n_top])
+    return list(ranked_movies['movie'].head(n_top))
 
 def find_similiar_movies(movie_id:int, movies_df:pd.DataFrame) -> str:
     '''
