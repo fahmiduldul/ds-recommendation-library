@@ -70,6 +70,15 @@ class Recommender():
         self.ranked_movies = rf.create_ranked_movies(self.movies_df, self.reviews_df)
 
     def make_recs(self, user_id: int):
+        '''
+        give movie recommendation based on user_id
+        
+        INPUT:
+        user_id - user id
+
+        OUTPUT:
+        result - name of movie or list of it
+        '''
         if(user_id in self.users_arr):
             user_idx = np.where(self.users_arr == user_id)[0][0]
             dot_prod = self.u_mat[user_idx,:].dot(self.v_mat)
@@ -82,6 +91,16 @@ class Recommender():
 
 
     def predict_rating(self, user_id, movie_id) -> int:
+        '''
+        predict the movie rating given by the user
+
+        INPUT:
+        user_id - user id
+        movie_id - movie id
+
+        OUTPUT:
+        pred - rating prediction of given movie
+        '''
         user_idx = np.where(self.users_arr == user_id)[0][0]
         movie_idx = np.where(self.movies_arr == movie_id)[0][0]
         
