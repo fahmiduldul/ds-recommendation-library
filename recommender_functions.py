@@ -51,7 +51,7 @@ def find_similiar_movies(movie_id:int, movies_df:pd.DataFrame) -> str:
 
     #get the most likely movie
     movie_rows = np.where(dot_prod == np.max(dot_prod))[0]
-    movie_row = np.random.choice(movie_rows)
+    movie_row: int = np.random.choice(movie_rows)
     movie = movies_df.iloc[movie_row]['movie']
 
     return movie
